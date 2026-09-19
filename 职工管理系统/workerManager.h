@@ -21,7 +21,10 @@ public:
 	void init_Emp();//初始化数组
 	void show_Emp();
 	int IsExist(int id);//先判断是否存在 -1不存在，存在返回数组下标
-	void Del_Emp();
+	void Del_Emp();//删除职工
+	void Mod_Emp();
+	void Find_Emp();
+	void Sort_Emp();
 	int get_EmpNum();//统计文件中人数
 	~workerManager();
 

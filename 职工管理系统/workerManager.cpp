@@ -133,8 +133,15 @@ void workerManager::Add_Emp()
 
 			cout << "请输入第 " << i + 1 << " 个新职工编号： " << endl;
 			cin >> id;
+			while(this->IsExist(id) != -1)
+			{
+				cout << "该职工编号已存在，请重新输入" << endl;
+				cin >> id;
+			}
 
 			cout << "请输入第 " << i + 1 << " 个新职工姓名： " << endl;
+			
+				
 			cin >> name;
 
 			cout << " 请选择该职工的岗位： " << endl;
@@ -174,8 +181,8 @@ void workerManager::Add_Emp()
 	}
 	else
 		cout << "输入有误" << endl;
-	system("pause");
-	system("cls");
+	system("pause");//按任意键
+	system("cls");//清屏
 
 }
 
@@ -235,11 +242,72 @@ int workerManager::IsExist(int id)
 	}
 	return index;
 }
+
+void workerManager::Find_Emp()
+{
+	if (this->m_FileIsEmpty)
+	{
+		cout << "职工记录为空！" << endl;
+		return;
+	}
+	cout << "请选择查找方式" << endl;
+	cout << "1.按职工ID查找" << endl;
+	cout << "2.按职工姓名查找" << endl;
+	int select = -1;
+	cin >> select;
+	if (select == 1)
+	{
+		int id = -1;
+		cout << "请输入要查找的职工ID: " << endl;
+		cin >>id;
+		int ret = this->IsExist(id);
+		if (ret == -1)
+		{
+			cout << "查不到该职工。" << endl;
+		}
+		else
+		{
+			cout << "查找成功！该职工信息如下： " << endl;
+			this->m_EmpArray[ret]->showInfo();
+		}
+
+	}
+
+	else if (select == 2)
+	{
+		cout << "请输入要查找职工的姓名: " << endl;//姓名有重名的
+		string name = "";
+		bool flag = false;//查找到的标志
+		cin >> name;
+		for (int i = 0;i < this->m_EmpNum;i++)
+		{
+			if (this->m_EmpArray[i]->m_Name == name)
+			{
+
+				this->m_EmpArray[i]->showInfo();//利用多态调用接口
+				flag = true;
+			}
+			
+		}
+		if (flag)
+			cout << "查找成功!" << endl;
+		else
+			cout << "查不到该职工。" << endl;
+
+	}
+	else
+		cout << "输入选项有误!" << endl;
+
+	system("pause");
+	system("cls");
+	
+
+}
 void workerManager::Del_Emp()
 {
 	if (this->m_FileIsEmpty)
 	{
-		cout << "文件不存在或记录为空!" << endl;
+		cout << "文件不存在或职工记录为空!" << endl;
 	}
 	else
 	{
@@ -251,14 +319,127 @@ void workerManager::Del_Emp()
 		{
 			for (int i = ret;i < this->m_EmpNum-1;i++)
 			{
-
+				this->m_EmpArray[i] = this->m_EmpArray[i + 1];
 			}
+			this->m_EmpNum--;
+			this->save();
+			cout << "删除成功!" << endl;
 		}
 		else
 			cout << "删除失败，职工不存在" << endl;
 	}
+	//按任意键清屏
+	system("pause");
+	system("cls");
 }
 
+void workerManager::Mod_Emp()
+{
+	if(this->m_FileIsEmpty)
+	{
+		cout << "文件为空或职工记录为空" << endl;
+	}
+	else
+	{
+		int id = -1;
+		cout << "请输入要修改的职工ID: " << endl;
+		cin >> id;
+		int ret = IsExist(id);
+		if (ret != -1)//说明职工存在
+		{
+			cout << "您将要修改职工原始信息如下： " << endl;
+			this->m_EmpArray[ret]->showInfo();
+			delete this->m_EmpArray[ret];
+			//delete 是 C++ 的运算符（不是函数），作用是“释放 new 出来的堆内存，并调用对象的析构函数”。
+			//这一行就是：把数组里第 ret 个位置指向的那个职工对象销毁掉。
+			int newId = 0;
+			string newName = "";
+			int newDid = 0;
+
+
+			cout<<"请修改职工新ID： " << endl;
+			cin >> newId;
+			if (newId != id && IsExist(newId) != -1)
+			{
+				cout << "该ID已经被占用，请重新输入: " << endl;
+				this->m_EmpArray[ret] = nullptr;
+				return;
+			}
+			cout << "请修改职工新姓名： " << endl;
+			cin >> newName;
+			cout << "请修改职工新部门id: " << endl;
+			cout << "1、普通职工" << endl;
+			cout << "2、经理" << endl;
+			cout << "3、老板" << endl;
+
+			cin >> newDid;
+			Worker* neWorker = NULL;
+			//Worker* p; 声明的不是 Worker 对象，而是一个“能指向 Worker 类型对象的指针”。
+			//抽象类不能实例化对象，但可以有指向它的指针，这两件事不矛盾。
+			switch (newDid)
+			{
+			case 1: neWorker = new Employee(newId, newName, newDid);break;
+			case 2: neWorker = new Manager(newId, newName, newDid);break;
+			case 3: neWorker = new Boss(newId, newName, newDid);break;
+
+			default:
+				cout << "部门ID无效，修改失败" << endl;
+				break;
+			}
+
+			this->m_EmpArray[ret] = neWorker;
+			cout << "修改成功！" << endl;
+			this->save();
+		}
+		else
+		{
+			cout << "职工不存在，请重新输入!" << endl;
+		}
+
+	}
+	system("pause");
+	system("cls");
+}
+
+void workerManager::Sort_Emp()
+{
+	if (this->m_FileIsEmpty)
+	{
+		cout << "文件或者职工记录为空，不能排序" << endl;
+		
+		return;
+	}
+	int select = 0;
+	cout << "请选择排序方式： " << endl;
+	cout << "1.按职工号升序" << endl;
+	cout << "2.按职工号降序" << endl;
+	cin >> select;
+	
+	for(int i=0;i<this->m_EmpNum-1;i++)
+	{ 
+		int MinorMax = i;
+		for(int j=i+1;j<this->m_EmpNum;j++)
+		{
+			if (select == 1)
+			{
+				if (m_EmpArray[i]->m_Id > m_EmpArray[j]->m_Id)
+					MinorMax = j;
+			}
+			else
+			{
+				if (m_EmpArray[i]->m_Id < m_EmpArray[j]->m_Id)
+					MinorMax = j;
+			}
+			Worker* temp = m_EmpArray[MinorMax];
+			m_EmpArray[MinorMax] = m_EmpArray[i];
+			m_EmpArray[i] = temp;
+			MinorMax = i;
+		}
+	}
+	cout << "排序成功，排序后结果为： " << endl;
+	this->show_Emp();
+
+}
 void workerManager::ExitSystem()
 {
 	cout << "欢迎下次使用" << endl;
