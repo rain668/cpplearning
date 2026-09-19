@@ -26,6 +26,7 @@ public:
 	void Find_Emp();
 	void Sort_Emp();
 	int get_EmpNum();//统计文件中人数
+	void Clear_File();
 	~workerManager();
 
 

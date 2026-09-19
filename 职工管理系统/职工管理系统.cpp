@@ -58,7 +58,9 @@ int main()
 		case 6:
 			wm.Sort_Emp();
 			break;
-		case 7:break;
+		case 7:
+			wm.Clear_File();
+			break;
 		default:break;
 	}
 	

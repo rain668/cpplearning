@@ -430,13 +430,16 @@ void workerManager::Sort_Emp()
 				if (m_EmpArray[i]->m_Id < m_EmpArray[j]->m_Id)
 					MinorMax = j;
 			}
-			Worker* temp = m_EmpArray[MinorMax];
+			if(i!=MinorMax)
+			{ 
+            Worker* temp = m_EmpArray[MinorMax];
 			m_EmpArray[MinorMax] = m_EmpArray[i];
 			m_EmpArray[i] = temp;
-			MinorMax = i;
+			}
 		}
 	}
 	cout << "排序成功，排序后结果为： " << endl;
+	this->save();
 	this->show_Emp();
 
 }
@@ -446,11 +449,57 @@ void workerManager::ExitSystem()
 	system("pause");
 	exit(0);//立即终止整个进程，无论在哪调用
 }
+
+void workerManager::Clear_File()
+{
+	cout << "确认清空？" << endl;
+	cout << "1、确认" << endl;
+	cout << "2、取消" << endl;
+	int select = 0;
+	cin >> select;
+	if (select == 1)
+	{
+		ofstream ofs(FILENAME, ios::trunc);//清空文件
+		ofs.close();
+		if (this->m_EmpArray != NULL)
+		{
+			for (int i = 0;i < this->m_EmpNum;i++)
+			{
+				if (this->m_EmpArray[i] != NULL)
+				{
+					delete this->m_EmpArray[i];
+					this->m_EmpArray[i] = NULL;
+				}
+			}
+			delete[] this->m_EmpArray;
+			this->m_EmpArray = NULL;
+			this->m_EmpNum = 0;
+			this->m_FileIsEmpty = true;
+		}
+		cout << "清空成功!" << endl;
+	}
+	else
+	{
+		return;
+	}
+	system("pause");
+	system("cls");
+}
 workerManager::~workerManager()
 {
 	
 	if (this->m_EmpArray != NULL)
 	{
+		for(int i=0;i<m_EmpNum;i++)
+		{
+			if(m_EmpArray[i]!=NULL)
+			{
+				delete m_EmpArray[i];
+				m_EmpArray[i] = NULL;
+			}
+				
+		}
+
 		delete[] this->m_EmpArray;
 		this->m_EmpArray = NULL;
 	}
