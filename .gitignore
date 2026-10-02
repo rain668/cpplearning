@@ -13,6 +13,11 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+# 程序运行时生成的数据文件
+职工管理系统/empFile.txt
+*.txt
+!requirements.txt
+
 # Mono auto generated files
 mono_crash.*
 

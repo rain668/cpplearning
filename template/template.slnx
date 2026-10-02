@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="yuan.vcxproj" Id="2a531dfc-f617-4962-aafa-ba9df5fd2625" />
+  <Project Path="template.vcxproj" />
 </Solution>
